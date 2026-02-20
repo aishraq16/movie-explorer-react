@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
-import './App.css'
 import MovieCard from './components/MovieCard'
-import Home from '../pages/Home'
+import Home from './pages/Home'
 import { Routes, Route } from 'react-router-dom'
-import Favourites from '../pages/Favourites'
+import Favourites from './pages/Favourites'
 import NavBar from "./components/NavBar"
+import "./styles/App.css"
 
 function App() {
   return (

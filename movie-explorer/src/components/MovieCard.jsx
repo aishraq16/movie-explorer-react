@@ -1,3 +1,5 @@
+import "../styles/MovieCard.css"
+
 function MovieCard({movie}) {
 
     const onFavouriteClick = () => {
