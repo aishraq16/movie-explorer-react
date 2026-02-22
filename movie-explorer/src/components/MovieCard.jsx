@@ -7,16 +7,18 @@ function MovieCard({movie}) {
     }
 
     return (
-        <div className="movie-poster">
-            <img src={movie.url} alt={movie.title}/>
-            <div className="movie-overlay">
-                <button className="favorite-btn" onClick={onFavouriteClick}>
-                    ♡
-                </button>
+        <div className="movie-card">
+            <div className="movie-poster">
+                <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt={movie.title}/>
+                <div className="movie-overlay">
+                    <button className="favorite-btn" onClick={onFavouriteClick}>
+                        ♡
+                    </button>
+                </div>
             </div>
             <div className="movie-info">
-                <h3>{movie.title}</h3>
-                <p>{movie.release_date}</p>
+                    <h3>{movie.title}</h3>
+                    <p>{movie.release_date.substring(0, 4)}</p>
             </div>
         </div>
     )
