@@ -40,12 +40,11 @@ function Home(){
         } finally {
             setLoading(false)
         }
-        alert(searchQuery)
     } 
 
     const handleChange = (e) => {
         e.preventDefault() //so the search string does not disappear from the search box
-        setSearchQuery(e.target.value)
+        setSearchQuery(e.target.value) //changes searchQuery
     }
 
     /* const movies = [
@@ -54,10 +53,14 @@ function Home(){
         {id: 3, title: "Inglourious Basterds", release_date: "2009"}
     ] */
 
-    return (
+    return ( //based on the state change, the part below will update and re-render
         <div className="home">
             <form className="search-form" onSubmit={handleSearch}>
-                <input type="text" className="search-input" value={searchQuery} onChange={handleChange} placeholder="Search For A Movie..." />
+                <input type="text" 
+                className="search-input" 
+                value={searchQuery} //this locks the component to useState
+                onChange={handleChange} //
+                placeholder="Search For A Movie..." />
                 <button type="submit" className="search-button">Search</button>
             </form>
             {error && <div className="error-message">{error}</div>}
@@ -71,4 +74,4 @@ function Home(){
     )
 }
 
-export default Home;
+export default Home; 
