@@ -14,22 +14,16 @@
 }
 
 .navbar-brand {
-  font-family: var(--font-display);
-  font-size: 1.35rem;
-  font-weight: 700;
-  letter-spacing: -0.03em;
+  display: flex;
+  align-items: center;
 }
 
-.navbar-brand a {
-  background: linear-gradient(135deg, #f8fafc 0%, #a5b4fc 45%, #818cf8 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  transition: filter var(--duration) var(--ease-out);
-}
-
-.navbar-brand a:hover {
-  filter: brightness(1.08);
+.brand-link {
+  font-size: 1.3rem;
+  font-weight: 800;
+  text-transform: lowercase;
+  letter-spacing: 0.02em;
+  color: var(--text-primary);
 }
 
 .navbar-links {
@@ -59,12 +53,12 @@
     padding: 0.85rem 1rem;
   }
 
-  .navbar-brand {
-    font-size: 1.15rem;
-  }
-
   .navbar-links {
     gap: 0.25rem;
+  }
+
+  .brand-link {
+    font-size: 1.18rem;
   }
 
   .nav-link {
