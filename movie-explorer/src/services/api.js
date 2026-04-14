@@ -1,8 +1,12 @@
-const API_KEY = "f030bdd9ebdfee8ee91697db05bac8ad"
+const API_KEY = import.meta.env.VITE_TMDB_API_KEY
 const BASE_URL = "https://api.themoviedb.org/3"
 
 // Builds a TMDB URL with the API key and any optional query parameters.
 const buildUrl = (path, queryParams = {}) => {
+    if (!API_KEY) {
+        throw new Error("Missing VITE_TMDB_API_KEY. Add it to your .env file.")
+    }
+
     const url = new URL(`${BASE_URL}${path}`)
     url.searchParams.set("api_key", API_KEY)
 
@@ -32,22 +36,14 @@ const requestJson = async (path, queryParams = {}) => {
     return data
 }
 
-// Fetches multiple discover pages and combines them into one list.
-// TMDB does not provide a single endpoint that returns every movie in one request.
+// Fetches multiple popular-movie pages and combines them into one list.
 export const getAllMovies = async (pageCount = 10) => {
     // Keep requests in a reasonable range so initial load stays responsive.
     const safePageCount = Math.min(Math.max(pageCount, 1), 20)
 
     const pageRequests = Array.from({ length: safePageCount }, (_, index) => {
         const page = index + 1
-        return requestJson("/discover/movie", {
-            include_adult: false,
-            include_video: false,
-            language: "en-US",
-            page,
-            sort_by: "primary_release_date.desc",
-            vote_count_gte: 25,
-        })
+        return requestJson("/movie/popular", { language: "en-US", page })
     })
 
     const pages = await Promise.all(pageRequests)
