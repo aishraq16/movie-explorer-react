@@ -8,6 +8,12 @@ function Home(){
     const [error, setError] = useState(null)
     const [loading, setLoading] = useState(true)
 
+    // TODO: Add state for filters and sorting here.
+    // Keep the raw movie list separate from the rendered list if you want search + filter combinations.
+    
+    // TODO: Add selected movie state here if you build the details modal.
+    // The page should own modal visibility so MovieCard stays simple.
+
     useEffect( () => {
         const loadPopularMovies = async () => {
             try {
@@ -55,6 +61,7 @@ function Home(){
 
     return ( //based on the state change, the part below will update and re-render
         <div className="home">
+            {/* TODO: Add a FilterBar above this form if you implement sorting or year/genre filtering. */}
             <form className="search-form" onSubmit={handleSearch}>
                 <input type="text" 
                 className="search-input" 
@@ -69,6 +76,7 @@ function Home(){
                 ) : (
             <div className="movie-grid">
                 {movies.map( (movie) => (movie.title.toLowerCase().startsWith(searchQuery) && <MovieCard movie={movie} key={movie.id}/>))}
+                {/* TODO: Replace this direct render with a derived list once filters and sorting are added. */}
             </div> )}
         </div>
     )
