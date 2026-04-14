@@ -32,14 +32,35 @@ const requestJson = async (path, queryParams = {}) => {
     return data
 }
 
-// Fetches the current popular movies list for the home page.
-export const getPopularMovies = async () => {
-    const data = await requestJson("/movie/popular")
-    return data.results ?? []
+// Fetches multiple discover pages and combines them into one list.
+// TMDB does not provide a single endpoint that returns every movie in one request.
+export const getAllMovies = async (pageCount = 10) => {
+    // Keep requests in a reasonable range so initial load stays responsive.
+    const safePageCount = Math.min(Math.max(pageCount, 1), 20)
+
+    const pageRequests = Array.from({ length: safePageCount }, (_, index) => {
+        const page = index + 1
+        return requestJson("/discover/movie", {
+            include_adult: false,
+            include_video: false,
+            language: "en-US",
+            page,
+            sort_by: "primary_release_date.desc",
+            vote_count_gte: 25,
+        })
+    })
+
+    const pages = await Promise.all(pageRequests)
+    // Merge page results into one movie array for Home.
+    const merged = pages.flatMap((pageData) => pageData.results ?? [])
+
+    // Removes duplicate IDs in case the API returns overlap across pages.
+    return merged.filter((movie, index, list) => index === list.findIndex((item) => item.id === movie.id))
 }
 
 // Searches TMDB for movies that match the user's query.
 export const searchMovies = async (query) => {
+    // Search is still server-side from TMDB; filters are applied client-side in Home.
     const data = await requestJson("/search/movie", { query })
     return data.results ?? []
 }
