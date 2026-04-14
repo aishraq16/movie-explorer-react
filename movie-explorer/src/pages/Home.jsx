@@ -1,7 +1,8 @@
 import MovieCard from "../components/MovieCard"
 import { useState, useEffect } from "react"
 import "../styles/Home.css"
-import { getAllMovies, searchMovies } from "../services/api"
+import { getAllMovies, getMovieDetails, searchMovies } from "../services/api" // getMovieDetails is used to load richer modal data.
+import MovieDetailsModal from "../components/MovieDetailsModal" // Modal component rendered when a movie is selected.
 
 const MOVIE_GENRES = [
     { id: 28, name: "Action" },
@@ -32,14 +33,9 @@ function Home(){
     const [loading, setLoading] = useState(true)
     const [selectedGenre, setSelectedGenre] = useState("")
     const [releaseYear, setReleaseYear] = useState("")
-
-    
-    // TODO: Add state for filters and sorting here.
-    // Keep the raw movie list separate from the rendered list if you want search + filter combinations.
     const [filteredMovies, setFilteredMovies] = useState([])
-    // TODO: Add selected movie state here if you build the details modal.
-    // The page should own modal visibility so MovieCard stays simple.
-    const [selectedMovie, setSelectedMovie] = useState(null)
+    const [selectedMovie, setSelectedMovie] = useState(null) // Holds current movie shown in modal; null means modal is closed.
+    const [isModalLoading, setIsModalLoading] = useState(false) // Tracks whether detailed modal data is still loading.
 
     // Initial page load now pulls from discover pages instead of only popular movies.
     useEffect( () => {
@@ -58,9 +54,9 @@ function Home(){
     }, []) //useEffect will run when the dependency array changes
 
     useEffect(() => {
-        const normalizedQuery = searchQuery.trim().toLowerCase()
+        const normalizedQuery = searchQuery.trim().toLowerCase() //remove whitespaces and make lowercase
         const genreId = selectedGenre ? Number(selectedGenre) : null
-        const normalizedYear = releaseYear.trim()
+        const normalizedYear = releaseYear.trim() //remove whitespaces
 
         // Apply all active filters together so search, genre, and year work in combination.
         const nextMovies = movies.filter((movie) => {
@@ -115,9 +111,27 @@ function Home(){
         {id: 3, title: "Inglourious Basterds", release_date: "2009"}
     ] */
 
+    const handleMovieSelect = async (movie) => {
+        setSelectedMovie(movie) // Open modal immediately with basic card/list data.
+        setIsModalLoading(true) // Show loading state while we fetch full movie details.
+
+        try {
+            const movieDetails = await getMovieDetails(movie.id) // Request richer movie data (runtime, full genres, etc.).
+            setSelectedMovie(movieDetails) // Replace basic movie with detailed response once loaded.
+        } catch (err) {
+            console.log("Failed to load selected movie details", err) // Keep modal open with fallback/basic info if request fails.
+        } finally {
+            setIsModalLoading(false) // End loading state whether request succeeds or fails.
+        }
+    }
+
+    const handleCloseModal = () => {
+        setSelectedMovie(null) // Clear selected movie and close modal.
+        setIsModalLoading(false) // Reset loading state to avoid stale spinner text.
+    }
+    
     return ( //based on the state change, the part below will update and re-render
         <div className="home">
-            {/* TODO: Add a FilterBar above this form if you implement sorting or year/genre filtering. */}
             <form className="search-form" onSubmit={handleSearch}>
                 <input type="text" 
                 className="search-input" 
@@ -159,9 +173,9 @@ function Home(){
                 <div className="loading">Loading ... </div>
                 ) : (
             <div className="movie-grid">
-                {filteredMovies.map((movie) => <MovieCard movie={movie} key={movie.id}/>) }
-                {/* TODO: Replace this direct render with a derived list once filters and sorting are added. */}
+                {filteredMovies.map((movie) => <MovieCard movie={movie} key={movie.id} onSelect={handleMovieSelect}/>)} {/* Pass select handler so each card can request modal open. */}
             </div> )}
+            {selectedMovie && <MovieDetailsModal movie={selectedMovie} onClose={handleCloseModal} isLoading={isModalLoading}/>} {/* Render modal only when a movie is selected. */}
         </div>
     )
 }
